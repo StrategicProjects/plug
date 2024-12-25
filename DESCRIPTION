@@ -1,0 +1,24 @@
+Package: plug
+Type: Package
+Title: Secure and Intuitive Access to 'Plug' <https://plugbytpf.com.br> Application Interface
+Version: 0.1.0
+Date: 2024-12-01
+Authors@R: c(
+            person("Andre", "Leite", email = "leite@castlab.org", role = c("aut", "cre")),
+            person("Felipe", "Ferreira", email = "felipe.ferreira@semobi.pe.gov.br", role = "aut"),
+            person("Hugo", "Vaconcelos", email = "hugo.vasconcelos@ufpe.br", role = "aut"),
+            person("Diogo", "Bezerra", email = "diogo.bezerra@ufpe.br", role = "aut"))
+Description: Provides a secure and user-friendly interface to interact with the Plug <https://plugbytpf.com.br> 'API'. It enables developers to store and manage tokens securely using the 'keyring' package, retrieve data from 'API' endpoints with the 'httr2' package, and handle large datasets with chunked data fetching. Designed for simplicity and security, the package facilitates seamless integration with 'Plug' ecosystem.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+LazyData: true
+RoxygenNote: 7.3.2
+Imports:
+    dplyr,
+    tibble,
+    httr2,
+    glue,
+    keyring
+URL: <https://github.com/StrategicProjects/plug>
+Config/Needs/website: tidyverse/tidytemplate
