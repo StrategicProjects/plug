@@ -6,7 +6,7 @@
 \usage{
 plug_execute_query(
   sql_template,
-  endpoint = "https://homologacaoder.madrix.app/MadrixApi/executeQuery",
+  endpoint = "https://plug.der.pe.gov.br/MadrixApi/executeQuery",
   verbosity = 0,
   ...
 )
@@ -19,8 +19,6 @@ plug_execute_query(
 \item{verbosity}{The verbosity level of the API request (0 = none, 1 = minimal, 2 = detailed).}
 
 \item{...}{Named arguments to replace placeholders in the SQL template.}
-
-\item{validate}{Logical, whether to validate the SQL query before execution. Default is TRUE.}
 }
 \value{
 A tibble containing the query results.
@@ -30,11 +28,12 @@ This function executes a user-defined SQL query on the Plug database, with safe 
 using \code{glue_sql}.
 }
 \examples{
+\donttest{
 \dontrun{
 data <- plug_execute_query(
   sql_template = "SELECT * FROM { table } WHERE status = { status }",
   table = "Contratos_VIEW",
   status = "active"
 )
-}
+}}
 }

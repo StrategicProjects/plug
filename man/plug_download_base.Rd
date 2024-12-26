@@ -6,7 +6,7 @@
 \usage{
 plug_download_base(
   base_name,
-  endpoint = "https://homologacaoder.madrix.app/MadrixApi/executeQuery",
+  endpoint = "https://plug.der.pe.gov.br/MadrixApi/executeQuery",
   verbosity = 0
 )
 }
@@ -24,9 +24,11 @@ A tibble containing all data from the specified base.
 This function downloads all data from a specified base using the query \verb{SELECT * FROM base_name}.
 }
 \examples{
+\donttest{
 \dontrun{
 data <- plug_download_base(
   base_name = "Contratos_VIEW"
 )
+}
 }
 }

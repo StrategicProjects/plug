@@ -14,5 +14,9 @@ or an empty list if no credentials are stored.
 This function lists all globally stored credentials (username and password) for the Plug API.
 }
 \examples{
+\donttest{
+\dontrun{
 plug_list_credentials()
+}
+}
 }

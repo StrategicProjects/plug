@@ -8,7 +8,9 @@
 #' @return No return value. The credentials are securely stored.
 #' @examples
 #' \donttest{
+#' \dontrun{
 #' plug_store_credentials("myusername", "mypassword")
+#' }
 #' }
 #' @export
 plug_store_credentials <- function(username, password) {
@@ -31,21 +33,23 @@ plug_store_credentials <- function(username, password) {
   )
 }
 
-
 #' Get a valid token for Plug API
 #'
 #' This function checks if a valid global token exists for the Plug API. If no valid token is found,
 #' it generates a new token using the stored global credentials by sending a properly formatted request.
 #'
 #' @param validity_time The validity period of the token in seconds. Default is 3600 (1 hour).
+#' @param endpoint The endpoint URL for generating the token.
 #'
 #' @return The valid token as a string.
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' token <- plug_get_valid_token(validity_time = 3600)
 #' }
+#' }
 #' @export
-plug_get_valid_token <- function(validity_time = 3600, endpoint = "https://homologacaoder.madrix.app/MadrixApi/authenticate/") {
+plug_get_valid_token <- function(validity_time = 3600, endpoint = "https://plug.der.pe.gov.br/MadrixApi/authenticate/") {
   # Retrieve cached token and expiration
   token <- tryCatch(
     keyring::key_get(service = "PlugAPI_Token", username = "global"),
@@ -68,11 +72,18 @@ plug_get_valid_token <- function(validity_time = 3600, endpoint = "https://homol
   # Create the JSON body for the authentication request
   body <- list(UserName = username, Password = password)
 
-  # Make the request to generate a new token
-  response <- httr2::request(endpoint) |>
-    httr2::req_headers("Content-Type" = "application/json") |>
-    httr2::req_body_json(body) |>
-    httr2::req_perform()
+  # Make the request to generate a new token with error handling
+  response <- tryCatch(
+    {
+      httr2::request(endpoint) |>
+        httr2::req_headers("Content-Type" = "application/json") |>
+        httr2::req_body_json(body) |>
+        httr2::req_perform()
+    },
+    error = function(e) {
+      stop("Failed to generate a new token. Please check your credentials and network connection. Error details: ", conditionMessage(e))
+    }
+  )
 
   # Check the content type and parse accordingly
   if (httr2::resp_content_type(response) == "application/json") {
@@ -94,6 +105,7 @@ plug_get_valid_token <- function(validity_time = 3600, endpoint = "https://homol
   return(new_token)
 }
 
+
 #' List registered credentials for Plug API
 #'
 #' This function lists all globally stored credentials (username and password) for the Plug API.
@@ -101,7 +113,11 @@ plug_get_valid_token <- function(validity_time = 3600, endpoint = "https://homol
 #' @return A named list with `username` and `password` fields if credentials are found,
 #' or an empty list if no credentials are stored.
 #' @examples
+#' \donttest{
+#' \dontrun{
 #' plug_list_credentials()
+#' }
+#' }
 #' @export
 plug_list_credentials <- function() {
   tryCatch(
@@ -127,7 +143,11 @@ plug_list_credentials <- function() {
 #' @return A named list with `token` and `expiration` fields if a token is found,
 #' or an empty list if no token is stored.
 #' @examples
+#' \donttest{
+#' \dontrun{
 #' plug_list_tokens()
+#' }
+#' }
 #' @export
 plug_list_tokens <- function() {
   tryCatch(
@@ -154,21 +174,21 @@ plug_list_tokens <- function() {
 #' @param sql_template A SQL query template with placeholders for variables.
 #' @param endpoint The endpoint URL for executing queries.
 #' @param verbosity The verbosity level of the API request (0 = none, 1 = minimal, 2 = detailed).
-#' @param validate Logical, whether to validate the SQL query before execution. Default is TRUE.
 #' @param ... Named arguments to replace placeholders in the SQL template.
 #'
 #' @return A tibble containing the query results.
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' data <- plug_execute_query(
 #'   sql_template = "SELECT * FROM { table } WHERE status = { status }",
 #'   table = "Contratos_VIEW",
 #'   status = "active"
 #' )
-#' }
+#' }}
 #' @export
 plug_execute_query <- function(sql_template,
-                               endpoint = "https://homologacaoder.madrix.app/MadrixApi/executeQuery",
+                               endpoint = "https://plug.der.pe.gov.br/MadrixApi/executeQuery",
                                verbosity = 0,
                                ...) {
 
@@ -177,8 +197,13 @@ plug_execute_query <- function(sql_template,
     stop("SQL template must be a valid string.")
   }
 
-  # Get a valid token
-  token <- plug_get_valid_token()
+  # Get a valid token, with error handling
+  token <- tryCatch(
+    plug_get_valid_token(),
+    error = function(e) {
+      stop("Failed to retrieve a valid token: ", conditionMessage(e))
+    }
+  )
 
   # Construct the SQL query using glue_sql with .con = NULL
   sql_query <- glue::glue_sql(sql_template, .con = NULL, ...)
@@ -211,14 +236,16 @@ plug_execute_query <- function(sql_template,
 #'
 #' @return A tibble containing all data from the specified base.
 #' @examples
+#' \donttest{
 #' \dontrun{
 #' data <- plug_download_base(
 #'   base_name = "Contratos_VIEW"
 #' )
 #' }
+#' }
 #' @export
 plug_download_base <- function(base_name,
-                               endpoint = "https://homologacaoder.madrix.app/MadrixApi/executeQuery",
+                               endpoint = "https://plug.der.pe.gov.br/MadrixApi/executeQuery",
                                verbosity = 0) {
   if (!is.character(base_name) || !nzchar(base_name)) {
     stop("Base name must be a valid string.")

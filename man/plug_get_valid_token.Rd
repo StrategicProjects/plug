@@ -6,11 +6,13 @@
 \usage{
 plug_get_valid_token(
   validity_time = 3600,
-  endpoint = "https://homologacaoder.madrix.app/MadrixApi/authenticate/"
+  endpoint = "https://plug.der.pe.gov.br/MadrixApi/authenticate/"
 )
 }
 \arguments{
 \item{validity_time}{The validity period of the token in seconds. Default is 3600 (1 hour).}
+
+\item{endpoint}{The endpoint URL for generating the token.}
 }
 \value{
 The valid token as a string.
@@ -20,7 +22,9 @@ This function checks if a valid global token exists for the Plug API. If no vali
 it generates a new token using the stored global credentials by sending a properly formatted request.
 }
 \examples{
+\donttest{
 \dontrun{
 token <- plug_get_valid_token(validity_time = 3600)
+}
 }
 }

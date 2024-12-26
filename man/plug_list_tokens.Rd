@@ -14,5 +14,9 @@ or an empty list if no token is stored.
 This function lists the stored API token and its expiration time for the Plug API.
 }
 \examples{
+\donttest{
+\dontrun{
 plug_list_tokens()
+}
+}
 }

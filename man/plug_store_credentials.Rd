@@ -19,6 +19,8 @@ This function securely stores the global username and password required to authe
 }
 \examples{
 \donttest{
+\dontrun{
 plug_store_credentials("myusername", "mypassword")
+}
 }
 }
