@@ -30,7 +30,7 @@ GitHub:
 install.packages("devtools")
 
 # Install the package
-devtools::install_github("yourusername/plug-api-package")
+devtools::install_github("StrategicProjects/plug")
 ```
 
 ## Features
