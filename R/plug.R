@@ -7,11 +7,7 @@
 #'
 #' @return No return value. The credentials are securely stored.
 #' @examples
-#' \donttest{
-#' \dontrun{
 #' plug_store_credentials("myusername", "mypassword")
-#' }
-#' }
 #' @export
 plug_store_credentials <- function(username, password) {
   if (!is.character(username) || !nzchar(username)) {
@@ -33,15 +29,19 @@ plug_store_credentials <- function(username, password) {
   )
 }
 
+
+
 #' Get a valid token for Plug API
 #'
 #' This function checks if a valid global token exists for the Plug API. If no valid token is found,
 #' it generates a new token using the stored global credentials by sending a properly formatted request.
+#' If it fails to retrieve the token (for example, due to missing credentials or network issues),
+#' it will not throw an error but will display a message in English ("No valid credentials found.") and return `NULL`.
 #'
 #' @param validity_time The validity period of the token in seconds. Default is 3600 (1 hour).
 #' @param endpoint The endpoint URL for generating the token.
 #'
-#' @return The valid token as a string.
+#' @return The valid token as a string, or `NULL` if no valid credentials were found or an error occurred.
 #' @examples
 #' \donttest{
 #' \dontrun{
@@ -49,66 +49,85 @@ plug_store_credentials <- function(username, password) {
 #' }
 #' }
 #' @export
-plug_get_valid_token <- function(validity_time = 3600, endpoint = "https://plug.der.pe.gov.br/MadrixApi/authenticate/") {
-  # Retrieve cached token and expiration
-  token <- tryCatch(
-    keyring::key_get(service = "PlugAPI_Token", username = "global"),
-    error = function(e) NULL
-  )
-  expiration <- tryCatch(
-    as.numeric(keyring::key_get(service = "PlugAPI_Token_Expiration", username = "global")),
-    error = function(e) NULL
-  )
-
-  # Check if token is still valid
-  if (!is.null(token) && !is.null(expiration) && Sys.time() < expiration) {
-    return(token)
-  }
-
-  # Generate a new token if none exists or if expired
-  username <- keyring::key_get(service = "PlugAPI_Username", username = "global")
-  password <- keyring::key_get(service = "PlugAPI_Password", username = "global")
-
-  # Create the JSON body for the authentication request
-  body <- list(UserName = username, Password = password)
-
-  # Make the request to generate a new token with error handling
-  response <- tryCatch(
+plug_get_valid_token <- function(validity_time = 3600,
+                                 endpoint = "https://plug.der.pe.gov.br/MadrixApi/authenticate/") {
+  tryCatch(
     {
-      httr2::request(endpoint) |>
-        httr2::req_headers("Content-Type" = "application/json") |>
-        httr2::req_body_json(body) |>
-        httr2::req_perform()
+      # 1) Retrieve cached token and expiration
+      token <- tryCatch(
+        keyring::key_get(service = "PlugAPI_Token", username = "global"),
+        error = function(e) NULL
+      )
+      expiration <- tryCatch(
+        as.numeric(keyring::key_get(service = "PlugAPI_Token_Expiration", username = "global")),
+        error = function(e) NULL
+      )
+
+      # 2) Check if token is still valid
+      if (!is.null(token) && !is.null(expiration) && Sys.time() < expiration) {
+        return(token)
+      }
+
+      # 3) Generate a new token if none exists or if expired
+      username <- keyring::key_get(service = "PlugAPI_Username", username = "global")
+      password <- keyring::key_get(service = "PlugAPI_Password", username = "global")
+
+      # 4) Create the JSON body for the authentication request
+      body <- list(UserName = username, Password = password)
+
+      # 5) Make the request to generate a new token with error handling
+      response <- tryCatch(
+        {
+          httr2::request(endpoint) |>
+            httr2::req_headers("Content-Type" = "application/json") |>
+            httr2::req_body_json(body) |>
+            httr2::req_perform()
+        },
+        error = function(e) {
+          stop("Failed to generate a new token. Please check your credentials and network connection. Error details: ", conditionMessage(e))
+        }
+      )
+
+      # 6) Check the content type and parse accordingly
+      if (httr2::resp_content_type(response) == "application/json") {
+        parsed_response <- httr2::resp_body_json(response, simplifyVector = TRUE)
+      } else if (httr2::resp_content_type(response) == "text/plain") {
+        parsed_response <- list(token = httr2::resp_body_string(response))
+      } else {
+        stop("Unexpected content type: ", httr2::resp_content_type(response))
+      }
+
+      # 7) Extract the token from the parsed response
+      new_token <- parsed_response$token
+      new_expiration <- as.numeric(Sys.time()) + validity_time
+
+      # 8) Cache the new token and expiration
+      keyring::key_set_with_value(
+        service = "PlugAPI_Token",
+        username = "global",
+        password = new_token
+      )
+      keyring::key_set_with_value(
+        service = "PlugAPI_Token_Expiration",
+        username = "global",
+        password = as.character(new_expiration)
+      )
+
+      return(new_token)
     },
     error = function(e) {
-      stop("Failed to generate a new token. Please check your credentials and network connection. Error details: ", conditionMessage(e))
+      # If an error occurs at any point, show a message in English and return NULL
+      message("No valid credentials found.")
+      return(NULL)
     }
   )
-
-  # Check the content type and parse accordingly
-  if (httr2::resp_content_type(response) == "application/json") {
-    parsed_response <- httr2::resp_body_json(response, simplifyVector = TRUE)
-  } else if (httr2::resp_content_type(response) == "text/plain") {
-    parsed_response <- list(token = httr2::resp_body_string(response))
-  } else {
-    stop("Unexpected content type: ", httr2::resp_content_type(response))
-  }
-
-  # Extract the token from the parsed response
-  new_token <- parsed_response$token
-  new_expiration <- as.numeric(Sys.time()) + validity_time
-
-  # Cache the new token and expiration
-  keyring::key_set_with_value(service = "PlugAPI_Token", username = "global", password = new_token)
-  keyring::key_set_with_value(service = "PlugAPI_Token_Expiration", username = "global", password = as.character(new_expiration))
-
-  return(new_token)
 }
-
 
 #' List registered credentials for Plug API
 #'
 #' This function lists all globally stored credentials (username and password) for the Plug API.
+#' If none are found or an error occurs, it displays a message in English ("No credentials found for Plug API.")
+#' and returns an empty list.
 #'
 #' @return A named list with `username` and `password` fields if credentials are found,
 #' or an empty list if no credentials are stored.
@@ -135,10 +154,11 @@ plug_list_credentials <- function() {
   )
 }
 
-
 #' List registered tokens for Plug API
 #'
 #' This function lists the stored API token and its expiration time for the Plug API.
+#' If none are found or an error occurs, it displays a message in English ("No token found for Plug API.")
+#' and returns an empty list.
 #'
 #' @return A named list with `token` and `expiration` fields if a token is found,
 #' or an empty list if no token is stored.
@@ -156,7 +176,10 @@ plug_list_tokens <- function() {
       token <- keyring::key_get(service = "PlugAPI_Token", username = "global")
       expiration <- keyring::key_get(service = "PlugAPI_Token_Expiration", username = "global")
 
-      list(token = token, expiration = as.POSIXct(as.numeric(expiration), origin = "1970-01-01"))
+      list(
+        token = token,
+        expiration = as.POSIXct(as.numeric(expiration), origin = "1970-01-01")
+      )
     },
     error = function(e) {
       message("No token found for Plug API.")
@@ -164,7 +187,6 @@ plug_list_tokens <- function() {
     }
   )
 }
-
 
 #' Execute a custom SQL query on the Plug database
 #'
@@ -180,12 +202,9 @@ plug_list_tokens <- function() {
 #' @examples
 #' \donttest{
 #' \dontrun{
-#' data <- plug_execute_query(
-#'   sql_template = "SELECT * FROM { table } WHERE status = { status }",
-#'   table = "Contratos_VIEW",
-#'   status = "active"
-#' )
-#' }}
+#' data <- plug_execute_query(sql_template = "SELECT TOP 1 * FROM Contratos_VIEW")
+#' }
+#' }
 #' @export
 plug_execute_query <- function(sql_template,
                                endpoint = "https://plug.der.pe.gov.br/MadrixApi/executeQuery",

@@ -5,8 +5,10 @@
 
 <!-- badges: start -->
 
+![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/plug)  
 ![](https://img.shields.io/badge/devel%20version-0.1.0-blue.svg)
 <!-- badges: end -->
+<!-- ![CRAN Downloads](https://cranlogs.r-pkg.org/badges/grand-total/plug) &nbsp; -->
 
 The **Plug API Integration Package** provides an intuitive and secure
 interface to interact with the Plug API. It enables developers to store
@@ -51,14 +53,23 @@ securely:
 ``` r
 # Store your username and password
 plug_store_credentials("your_username", "your_password")
-Fetching a Token
-The package automatically fetches and caches an authentication token. If you need to retrieve it manually, use:
+```
 
+## Fetching a Token
+
+The package automatically fetches and caches an authentication token. If
+you need to retrieve it manually, use:
+
+``` r
 # Fetch a valid token
 token <- plug_get_valid_token()
-Listing Stored Credentials and Tokens
+```
+
+## Listing Stored Credentials and Tokens
+
 You can list stored credentials and tokens:
 
+``` r
 # List credentials
 credentials <- plug_list_credentials()
 print(credentials)
@@ -66,41 +77,19 @@ print(credentials)
 # List tokens
 tokens <- plug_list_tokens()
 print(tokens)
-Executing SQL Queries
-You can execute custom SQL queries on the Plug API:
-
-# Execute a query
-data <- plug_execute_query(
-  sql_template = "SELECT * FROM {table} WHERE status = {status}",
-  table = "Contratos_VIEW",
-  status = "active"
-)
-
-print(data)
-Downloading Data
-Retrieve all data from a specific table:
-
-# Download all data from a table
-data <- plug_download_base(base_name = "Contratos_VIEW")
-print(data)
 ```
 
-### Examples
+## Executing SQL Queries
 
-#### Example 1: Fetch Active Contracts
+ou can execute custom SQL queries on the Plug API:
 
 ``` r
-data <- plug_execute_query(
-  sql_template = "SELECT * FROM {table} WHERE status = {status}",
-  table = "Contratos_VIEW",
-  status = "active"
-print(data)
-}
+# Example: Execute a query
+data <- plug_execute_query(sql_template = "SELECT * FROM Contratos_VIEW LIMIT 1")
 ```
 
-#### Example 2: Download All Data from a Table
-
 ``` r
+# Example: Download All Data from a Table
 data <- plug_download_base(base_name = "Contratos_VIEW")
 print(data)
 ```

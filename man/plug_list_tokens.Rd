@@ -12,6 +12,8 @@ or an empty list if no token is stored.
 }
 \description{
 This function lists the stored API token and its expiration time for the Plug API.
+If none are found or an error occurs, it displays a message in English ("No token found for Plug API.")
+and returns an empty list.
 }
 \examples{
 \donttest{

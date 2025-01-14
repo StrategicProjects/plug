@@ -30,10 +30,7 @@ using \code{glue_sql}.
 \examples{
 \donttest{
 \dontrun{
-data <- plug_execute_query(
-  sql_template = "SELECT * FROM { table } WHERE status = { status }",
-  table = "Contratos_VIEW",
-  status = "active"
-)
-}}
+data <- plug_execute_query(sql_template = "SELECT TOP 1 * FROM Contratos_VIEW")
+}
+}
 }

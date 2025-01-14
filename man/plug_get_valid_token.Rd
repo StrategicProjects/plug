@@ -15,11 +15,13 @@ plug_get_valid_token(
 \item{endpoint}{The endpoint URL for generating the token.}
 }
 \value{
-The valid token as a string.
+The valid token as a string, or \code{NULL} if no valid credentials were found or an error occurred.
 }
 \description{
 This function checks if a valid global token exists for the Plug API. If no valid token is found,
 it generates a new token using the stored global credentials by sending a properly formatted request.
+If it fails to retrieve the token (for example, due to missing credentials or network issues),
+it will not throw an error but will display a message in English ("No valid credentials found.") and return \code{NULL}.
 }
 \examples{
 \donttest{

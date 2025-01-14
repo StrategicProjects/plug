@@ -18,9 +18,5 @@ No return value. The credentials are securely stored.
 This function securely stores the global username and password required to authenticate with the Plug application.
 }
 \examples{
-\donttest{
-\dontrun{
 plug_store_credentials("myusername", "mypassword")
-}
-}
 }

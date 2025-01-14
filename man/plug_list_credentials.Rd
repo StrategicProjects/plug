@@ -12,6 +12,8 @@ or an empty list if no credentials are stored.
 }
 \description{
 This function lists all globally stored credentials (username and password) for the Plug API.
+If none are found or an error occurs, it displays a message in English ("No credentials found for Plug API.")
+and returns an empty list.
 }
 \examples{
 \donttest{
