@@ -6,16 +6,19 @@ Date: 2025-01-09
 Authors@R: c(
             person("Andre", "Leite", email = "leite@castlab.org", role = c("aut", "cre")),
             person("Felipe", "Ferreira", email = "felipe.ferreira@semobi.pe.gov.br", role = "aut"),
-            person("Hugo", "Vaconcelos", email = "hugo.vasconcelos@ufpe.br", role = "aut"),
+            person("Hugo", "Vasconcelos", email = "hugo.vasconcelos@ufpe.br", role = "aut"),
             person("Diogo", "Bezerra", email = "diogo.bezerra@ufpe.br", role = "aut"),
-            person("Roger", "Azevedo", email = "roger.azevedo@tpfe.com.br", role = "aut")
+            person("Roger", "Azevedo", email = "roger.azevedo@tpfe.com.br", role = "aut"),
+            person("Marcos", "Wasiliew", email = "marcos.wasiliew@gmail.com", role = "aut",
+                   comment = c(ORCID = "0009-0004-4694-3159")),
+            person("Júlia", "Nascimento Barreto", email = "juliabarreto@gd.seplag.pe.gov.br", role = "aut",
+                   comment = c(ORCID = "0009-0004-2851-7770"))
             )
 Description: Provides a secure and user-friendly interface to interact with the 'Plug' <https://plugbytpf.com.br> 'API'. It enables developers to store and manage tokens securely using the 'keyring' package, retrieve data from 'API' endpoints with the 'httr2' package, and handle large datasets with chunked data fetching. Designed for simplicity and security, the package facilitates seamless integration with 'Plug' ecosystem.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 LazyData: true
-RoxygenNote: 7.3.2
 Imports:
     tibble,
     httr2,
@@ -23,3 +26,4 @@ Imports:
     keyring
 URL: <https://github.com/StrategicProjects/plug>
 Config/Needs/website: tidyverse/tidytemplate
+Config/roxygen2/version: 8.0.0
