@@ -1,29 +1,26 @@
+## Submission
+
+This is an update of the package 'plug', from version 0.1.0 to 0.2.0.
+
+* Fixes the NOTE shown in the CRAN check results of version 0.1.0 ("Missing
+  dependency on R >= 4.1.0 because package code uses the pipe |>").
+* Fixes the replacement of placeholders in SQL templates and the handling of
+  failures in the communication with the 'API'.
+* The examples no longer write to the keyring of the user: they now use the
+  in-memory backend of the 'keyring' package.
+* Adds unit tests. They do not access the internet nor the system keyring.
+
+See NEWS.md for the complete list of changes.
+
 ## R CMD check results
 
-0 errors ✔ | 0 warnings ✔ | 0 notes ✔
+0 errors | 0 warnings | 0 notes
 
-* This is a new release.
+## Examples in \dontrun{}
 
-## Konstanze Lauseker Comments
+The examples that are not executed require valid credentials, provided by the
+administrators of the 'API', and access to the 'API'.
 
-1.	Title Length
+## Reverse dependencies
 
-We have shortened the package title to fewer than 65 characters. The new title 
-is:
-	Secure and Intuitive Access to ‘Plug’ Interface
-
-2.	Quotation Marks for Names
-
-We have placed package names, software names, and ‘API’ references in single 
-quotes throughout the title and description as requested.
-
-3.	Examples Wrapped in \donttest{}
-
-	•	We removed \donttest{} and \dontrun{} for the function plug_store_credentials(), 
-	  since it does not require actual credentials and can be executed in under 
-	  five seconds.
-	•	For the other functions, because they depend on valid credentials and/or 
-	  external services, we kept their examples in \donttest{} or \dontrun{} to 
-	  avoid potential runtime or dependency issues on CRAN's test systems.
-
-Thank you for reviewing our submission.
+There are no reverse dependencies.

@@ -7,3 +7,8 @@
 ^cran-comments\.md$
 ^LICENSE\.md$
 ^CRAN-SUBMISSION$
+^\.DS_Store$
+/\.DS_Store$
+^\.Rhistory$
+^CLAUDE\.md$
+^\.claude$
