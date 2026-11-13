@@ -16,6 +16,10 @@ interface to interact with the Plug API. It enables developers to store
 user credentials securely, fetch data using custom SQL queries, and
 manage authentication tokens automatically.
 
+> **Note**: plug is an independent project, not affiliated with, maintained
+> by or endorsed by TPF, the company behind
+> [Plug](https://plugbytpf.com.br).
+
 > **Note**: To access the Plug API, you must have valid credentials
 > (username and password) provided by the API administrators.
 
